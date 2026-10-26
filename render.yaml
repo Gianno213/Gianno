@@ -1,0 +1,20 @@
+# Blueprint dimostrativo: non crea database o risorse a pagamento.
+services:
+  - type: web
+    name: gianno-people-demo
+    runtime: node
+    plan: free
+    region: frankfurt
+    autoDeploy: false
+    buildCommand: npm ci --include=dev --no-audit --no-fund && npm run build
+    startCommand: npm start
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_VERSION
+        value: 24.19.0
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false

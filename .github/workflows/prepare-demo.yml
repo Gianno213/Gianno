@@ -1,0 +1,43 @@
+name: Prepara anteprima DEMO
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Scrivi DEMO. Solo progetto Supabase gratuito dedicato alle prove."
+        required: true
+      direction_id:
+        description: "UUID utente Direzione creato in Supabase Authentication"
+        required: true
+      hr_id:
+        description: "UUID utente HR (facoltativo)"
+        required: false
+      manager_id:
+        description: "UUID utente responsabile (facoltativo)"
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: gianno-demo-setup
+  cancel-in-progress: false
+jobs:
+  demo:
+    if: inputs.confirmation == 'DEMO'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Migrazioni e soli dati dimostrativi
+        run: node scripts/prepare-demo.mjs
+        env:
+          GIANNO_DEMO_CONFIRM: ${{ inputs.confirmation }}
+          DEMO_DATABASE_URL: ${{ secrets.DEMO_DATABASE_URL }}
+          DEMO_DATABASE_PASSWORD: ${{ secrets.DEMO_DATABASE_PASSWORD }}
+          DEMO_DATABASE_CA: ${{ secrets.DEMO_DATABASE_CA }}
+          DEMO_DIRECTION_ID: ${{ inputs.direction_id }}
+          DEMO_HR_ID: ${{ inputs.hr_id }}
+          DEMO_MANAGER_ID: ${{ inputs.manager_id }}
