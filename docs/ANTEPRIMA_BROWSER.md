@@ -16,6 +16,8 @@ Per la prova proponiamo **Supabase Free + Render Free**. Usare esclusivamente pi
 6. Copiare l'UUID del nuovo utente dalla sua scheda. Non è una password.
 7. Per provare anche gli altri ruoli, creare nello stesso modo `hr.demo@example.test` e `responsabile.demo@example.test` e conservare i relativi UUID. È facoltativo al primo avvio.
 
+Nelle impostazioni **Authentication**, disattivare **Allow new users to sign up / Enable sign ups**, lasciando attivo l’accesso email/password. Gli utenti si aggiungono soltanto dalla console amministrativa; non è prevista registrazione pubblica.
+
 Non caricare anagrafiche o documenti reali. Questi account sono esclusivamente per questa demo. Non riutilizzarli in produzione.
 
 ## 2. Preparare il database con un pulsante GitHub
