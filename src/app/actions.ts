@@ -20,9 +20,15 @@ const nullableDate = (f: FormData, k: string) =>
   text(f, k) ? date.parse(text(f, k)) : null;
 const safePath = (f: FormData, fallback: string) => {
   const p = text(f, "return_to");
-  return p.startsWith("/") && !p.startsWith("//") && !p.includes("\\")
-    ? p
-    : fallback;
+  if (
+    !p.startsWith("/") ||
+    p.startsWith("//") ||
+    p.includes("\\") ||
+    /[\u0000-\u001f\u007f]/.test(p)
+  )
+    return fallback;
+  const url = new URL(p, "https://gianno.invalid");
+  return url.pathname + url.search + url.hash;
 };
 function check(error: { message: string } | null) {
   if (error) throw new Error(error.message);
@@ -791,7 +797,10 @@ export async function requestPasswordReset(f: FormData) {
     redirectTo: callback.toString(),
   });
   redirect(
-    "/login?success=Se%20l’account%20esiste%2C%20riceverai%20le%20istruzioni%20per%20il%20recupero.",
+    "/login?success=" +
+      encodeURIComponent(
+        "Se l’account esiste, riceverai le istruzioni per il recupero.",
+      ),
   );
 }
 export async function updatePassword(f: FormData) {
