@@ -765,13 +765,30 @@ export async function requestPasswordReset(f: FormData) {
   const email = z.email().safeParse(text(f, "email"));
   if (!email.success) redirect("/login?error=Email%20non%20valida.");
   const supabase = await createClient();
-  const site = process.env.NEXT_PUBLIC_SITE_URL;
+  const site =
+    process.env.NEXT_PUBLIC_SITE_URL || process.env.RENDER_EXTERNAL_URL;
   if (!site)
     redirect(
       "/login?error=Recupero%20non%20configurato.%20Contatta%20la%20Direzione.",
     );
+  let callback: URL;
+  try {
+    callback = new URL("/auth/callback?next=/auth/password", site);
+    if (
+      callback.protocol !== "https:" &&
+      !(
+        callback.protocol === "http:" &&
+        ["localhost", "127.0.0.1"].includes(callback.hostname)
+      )
+    )
+      throw new Error("Invalid origin");
+  } catch {
+    redirect(
+      "/login?error=Recupero%20non%20configurato.%20Contatta%20la%20Direzione.",
+    );
+  }
   await supabase.auth.resetPasswordForEmail(email.data, {
-    redirectTo: new URL("/auth/callback?next=/auth/password", site).toString(),
+    redirectTo: callback.toString(),
   });
   redirect(
     "/login?success=Se%20l’account%20esiste%2C%20riceverai%20le%20istruzioni%20per%20il%20recupero.",
@@ -781,8 +798,17 @@ export async function updatePassword(f: FormData) {
   const supabase = await createClient();
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (userError || !user) redirect("/login");
+  const { data: assurance, error: assuranceError } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (assuranceError || !assurance)
+    redirect(
+      "/auth/password?error=Sessione%20non%20verificabile.%20Richiedi%20un%20nuovo%20link.",
+    );
+  if (assurance.nextLevel === "aal2" && assurance.currentLevel !== "aal2")
+    redirect("/auth/mfa?next=/auth/password");
   const parsed = z
     .string()
     .min(12)

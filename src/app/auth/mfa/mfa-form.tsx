@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-export default function MfaForm() {
+export default function MfaForm({
+  destination = "/dashboard",
+}: {
+  destination?: string;
+}) {
   const [factor, setFactor] = useState("");
   const [qr, setQr] = useState("");
   const [secret, setSecret] = useState("");
@@ -51,7 +55,10 @@ export default function MfaForm() {
     if (error) {
       setError("Codice non valido o scaduto. Riprova.");
       setBusy(false);
-    } else window.location.assign("/dashboard");
+    } else
+      window.location.assign(
+        destination === "/auth/password" ? "/auth/password" : "/dashboard",
+      );
   }
   return (
     <>

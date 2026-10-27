@@ -1,3 +1,4 @@
+import RecoveryLanding from "@/components/recovery-landing";
 import { signIn, requestPasswordReset } from "@/app/actions";
 import { isConfigured } from "@/lib/supabase/server";
 import Link from "next/link";
@@ -9,6 +10,7 @@ export default async function Login({
   const params = await searchParams;
   return (
     <main className="setup-screen">
+      <RecoveryLanding />
       <section className="setup-card">
         <p className="eyebrow">GIANNO PEOPLE</p>
         <h1>Bentornato.</h1>

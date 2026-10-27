@@ -26,7 +26,7 @@ Per uno stack di sviluppo interamente locale, eseguire `bash scripts/local-supab
 
 1. Creare un progetto Supabase in una regione UE, registrando titolare, responsabili, accordi e regione effettiva.
 2. Applicare in ordine i file in `supabase/migrations` tramite Supabase CLI (`supabase link`, `supabase db push`) o SQL Editor con utenza amministrativa. Non usare i file `supabase/tests/bootstrap.sql` in produzione: sono esclusivamente stub per i test locali.
-3. Configurare Auth con Site URL dell'app e redirect autorizzato `/auth/callback`. In produzione usare HTTPS, disabilitare iscrizioni pubbliche e creare/invitare gli utenti dalla console amministrativa. Configurare il proprio provider SMTP, i template invito/recupero descritti in `docs/OPERATIONS.md` e i limiti antiabuso.
+3. Configurare Auth con Site URL dell'app e redirect autorizzato `/auth/callback`. In produzione usare HTTPS, disabilitare iscrizioni pubbliche e creare/invitare gli utenti dalla console amministrativa. Per la demo è supportato il template standard ConfirmationURL, senza SMTP personalizzato; vedere [recupero password e aggiornamento Render](docs/RECUPERO_PASSWORD.md). Per produzione configurare email e limiti antiabuso secondo le esigenze operative.
 4. Creare il primo account Direzione e la relativa azienda/profilo con la procedura in [docs/OPERATIONS.md](docs/OPERATIONS.md). L'app non assegna privilegi in base all'indirizzo email né al primo accesso.
 5. Registrare il fattore TOTP dall'interfaccia. Direzione e HR devono completare MFA per le operazioni riservate.
 6. Accedere come Direzione, inserire i punti vendita nella sezione Sedi e assegnare i responsabili alle sedi. Inserire i dipendenti con dati fittizi per le prime verifiche.

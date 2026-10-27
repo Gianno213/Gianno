@@ -3,6 +3,15 @@ const config: NextConfig = {
   output: "standalone",
   allowedDevOrigins: ["127.0.0.1"],
   poweredByHeader: false,
+  logging: {
+    serverFunctions: false,
+    incomingRequests: {
+      ignore: [
+        /\/auth\/(callback|password)/,
+        /[?&](code|token_hash|access_token|refresh_token)=/,
+      ],
+    },
+  },
   serverExternalPackages: ["pdf-parse", "@napi-rs/canvas"],
   experimental: { serverActions: { bodySizeLimit: "16mb" } },
   async headers() {
@@ -19,6 +28,10 @@ const config: NextConfig = {
           },
           { key: "Cache-Control", value: "private, no-store" },
         ],
+      },
+      {
+        source: "/auth/:path*",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
       },
     ];
   },

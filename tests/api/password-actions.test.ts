@@ -26,7 +26,13 @@ beforeEach(() => {
       signInWithPassword,
       updateUser,
       signOut,
-      getUser: async () => ({ data: { user: { id: "u1" } } }),
+      getUser: async () => ({ data: { user: { id: "u1" } }, error: null }),
+      mfa: {
+        getAuthenticatorAssuranceLevel: async () => ({
+          data: { currentLevel: "aal1", nextLevel: "aal1" },
+          error: null,
+        }),
+      },
     },
   });
 });

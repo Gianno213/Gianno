@@ -4,7 +4,7 @@
 
 Seguire [database.md](database.md) per creare l'azienda e associare l'UUID Auth al primo profilo Direzione. Creare/invitare gli account Auth dalla console amministrativa Supabase, con iscrizioni pubbliche disattivate. La Direzione associa poi l'UUID dell'utente a ruolo e sedi nella sezione Impostazioni. Non è richiesto un token amministrativo nel runtime Next.js.
 
-Configurare un provider SMTP affidabile e Site URL dell'app; autorizzare `/auth/callback` e i redirect di recupero password sul dominio corretto. Il recupero password deve rispondere nello stesso modo per email esistenti e inesistenti. Usare password uniche e TOTP; conservare un processo amministrativo verificato per recupero del fattore perso, senza bypass pubblici.
+Configurare Site URL e redirect Auth sul dominio corretto; il template standard Supabase è supportato nella demo senza SMTP personalizzato. Per produzione valutare un provider SMTP affidabile. Il recupero password deve rispondere nello stesso modo per email esistenti e inesistenti. Usare password uniche e TOTP; conservare un processo amministrativo verificato per recupero del fattore perso, senza bypass pubblici.
 
 Per responsabili con più sedi aggiungere le singole assegnazioni. Rivedere periodicamente i profili e revocare tempestivamente gli accessi cessati: disattivare il profilo, rimuovere le assegnazioni e revocare le sessioni in Auth. Non basta nascondere il menu. Direzione/HR completano MFA prima dell'accesso ai dati riservati.
 
@@ -43,17 +43,8 @@ Usare Node.js 24 e `npm ci` con lockfile. Applicare migrazioni a un progetto di 
 
 Il consenso al rilascio richiede esito positivo dei flussi con tre utenti reali di collaudo: responsabile autorizzato a una sola sede, responsabile con più sedi, HR e Direzione con MFA; includere prove di revoca e tentativi di chiamata diretta alle API/Storage.
 
-## Template email Auth per inviti e recupero
+## Email Auth standard e recupero password
 
-Per inviti amministrativi e recupero funzionanti anche senza un verificatore PKCE già presente nel browser, configurare in Supabase Auth i template email con link al callback applicativo:
+Il template standard Supabase con `{{ .ConfirmationURL }}` è supportato senza SMTP personalizzato. Configurare Site URL e redirect autorizzati, mantenere PKCE e MFA e seguire [RECUPERO_PASSWORD.md](RECUPERO_PASSWORD.md) per l'aggiornamento Render e la prova completa.
 
-```html
-<a
-  href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=invite&amp;next=/auth/password"
-  >Imposta la password aziendale</a
->
-```
-
-Nel template di recupero sostituire `type=invite` con `type=recovery`. Il backend verifica il token tramite Supabase e ammette come destinazione successiva soltanto la pagina di password. Impostare Site URL e redirect autorizzati sul dominio HTTPS effettivo. Collaudare gli inviti e le email tramite SMTP di staging prima dell'uso reale; il test Docker non dimostra la consegna di email.
-
-Impostare in Auth almeno 12 caratteri per le nuove password, protezioni contro abusi/credenziali compromesse secondo il piano disponibile e cambio password sicuro. L'ambiente locale usa password fittizie generate, non account di produzione.
+Se in futuro si configurano template personalizzati, rimane supportato anche il callback `token_hash` con tipo `recovery` o `invite`. Non occorre adottarlo per usare il recupero standard. Impostare almeno 12 caratteri per le nuove password e le protezioni Auth previste dal piano. L'ambiente demo usa esclusivamente dati fittizi.
